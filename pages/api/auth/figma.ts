@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const tokenURL = 'https://www.figma.com/api/oauth/token';
+    const tokenURL = 'https://www.figma.com/api/oauth2/token';
     console.log('🔁 Fetching token from:', tokenURL);
     console.log('📤 Sending:', {
       client_id: CLIENT_ID,
