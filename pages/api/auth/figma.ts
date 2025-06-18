@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const tokenUrl = 'https://www.figma.com/api/oauth2/token';
+    const tokenUrl = 'https://api.figma.com/v1/oauth/token';
 
     const payload = new URLSearchParams({
       client_id: CLIENT_ID,
