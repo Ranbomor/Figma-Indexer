@@ -1,0 +1,25 @@
+{
+  "name": "figmawebindex",
+  "version": "1.0.0",
+  "main": "next.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ranbomor/Figma-Indexer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ranbomor/Figma-Indexer/issues"
+  },
+  "homepage": "https://github.com/Ranbomor/Figma-Indexer#readme",
+  "description": "",
+  "dependencies": {
+    "next": "^15.3.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  }
+}
