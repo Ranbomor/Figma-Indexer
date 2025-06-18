@@ -15,7 +15,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const tokenRes = await fetch('https://www.figma.com/api/oauth/token', {
+    const tokenRes = await fetch('https://api.figma.com/v1/oauth2/token', {
+      console.log("🔁 Fetching token from:", 'https://api.figma.com/v1/oauth2/token');
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
