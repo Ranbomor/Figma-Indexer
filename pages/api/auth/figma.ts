@@ -5,6 +5,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 const CLIENT_ID = process.env.FIGMA_CLIENT_ID!;
 const CLIENT_SECRET = process.env.FIGMA_CLIENT_SECRET!;
 const REDIRECT_URI = process.env.FIGMA_REDIRECT_URI!;
+console.log("🚨 DEBUG — Using redirect_uri:", REDIRECT_URI);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { code } = req.query;
@@ -28,6 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const tokenData = await tokenRes.json();
     console.log('🔑 Token Response:', tokenData);
+    
 
     if (!tokenRes.ok) {
       return res.status(tokenRes.status).json({
