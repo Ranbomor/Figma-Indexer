@@ -3,6 +3,9 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 const CLIENT_ID = process.env.FIGMA_CLIENT_ID!;
 const CLIENT_SECRET = process.env.FIGMA_CLIENT_SECRET!;
 const REDIRECT_URI = process.env.FIGMA_REDIRECT_URI!;
+const tokenData = await tokenRes.json();
+
+console.log('Token Response:', tokenData);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { code } = req.query;
@@ -31,7 +34,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     return res.status(200).json(tokenData);
-  } catch (err) {
-    return res.status(500).json({ error: 'OAuth error', details: err });
+    } catch (err: any) {
+    console.error('OAuth error:', err);
+      return res.status(500).json({
+          error: 'OAuth error',
+          details: err?.message || err?.toString() || 'Unknown error',
+    });
   }
+  
 }
