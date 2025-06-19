@@ -1,3 +1,5 @@
+// pages/api/auth/figma.ts
+
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { serialize } from 'cookie';
 
@@ -53,6 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.setHeader('Set-Cookie', serialize('figma_token', tokenData.access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
       path: '/',
       maxAge: 60 * 60 * 24 * 30, // 30 days
     }));
