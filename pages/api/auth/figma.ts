@@ -1,5 +1,3 @@
-// pages/api/auth/figma.ts
-
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 const CLIENT_ID = process.env.FIGMA_CLIENT_ID!;
@@ -33,6 +31,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   console.log("🔁 Fetching token from:", tokenUrl);
   console.log("📨 Sending:", Object.fromEntries(payload.entries()));
 
+  const curlEquivalent = `curl -X POST ${tokenUrl} \
+    -H "Content-Type: application/x-www-form-urlencoded" \
+    -d "client_id=${CLIENT_ID}" \
+    -d "client_secret=${CLIENT_SECRET}" \
+    -d "redirect_uri=${REDIRECT_URI}" \
+    -d "code=${code}" \
+    -d "grant_type=authorization_code"`;
+
+  console.log("🧪 CURL Equivalent:\n", curlEquivalent);
+
   try {
     const tokenRes = await fetch(tokenUrl, {
       method: 'POST',
@@ -55,7 +63,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(tokenRes.status).json({ error: 'Failed to fetch token', details: tokenData });
     }
 
-    lastUsedCode = code; // ✅ mark this code as used
+    lastUsedCode = code;
 
     return res.status(200).json(tokenData);
 
