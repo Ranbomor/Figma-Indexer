@@ -1,5 +1,5 @@
-
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { serialize } from 'cookie';
 
 const CLIENT_ID = process.env.FIGMA_CLIENT_ID!;
 const CLIENT_SECRET = process.env.FIGMA_CLIENT_SECRET!;
@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const tokenUrl = 'https://api.figma.com/v1/oauth/token';
+    const tokenUrl = 'https://www.figma.com/api/oauth/token';
 
     const payload = new URLSearchParams({
       client_id: CLIENT_ID,
@@ -37,24 +37,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const rawText = await tokenRes.text();
     console.log("🔓 Raw token response:", rawText);
 
-    if (!tokenRes.ok) {
-      return res.status(tokenRes.status).json({
-        error: 'Token request failed',
-        status: tokenRes.status,
-        response: rawText,
-      });
+    let tokenData;
+    try {
+      tokenData = JSON.parse(rawText);
+    } catch (err) {
+      console.error("❌ Failed to parse token response JSON");
+      return res.status(500).json({ error: 'Failed to parse token response JSON', raw: rawText });
     }
 
-    try {
-      const tokenData = JSON.parse(rawText);
-      return res.status(200).json(tokenData);
-    } catch (jsonErr) {
-      console.error('❌ Failed to parse token response JSON');
-      return res.status(500).json({
-        error: 'Invalid JSON in token response',
-        raw: rawText,
-      });
+    if (!tokenRes.ok) {
+      return res.status(tokenRes.status).json({ error: 'Failed to fetch token', details: tokenData });
     }
+
+    // Save token to secure cookie
+    res.setHeader('Set-Cookie', serialize('figma_token', tokenData.access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    }));
+
+    return res.status(200).json({ ok: true });
 
   } catch (err: any) {
     console.error('❌ OAuth error:', err);
