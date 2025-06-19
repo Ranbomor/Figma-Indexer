@@ -6,11 +6,18 @@ const CLIENT_ID = process.env.FIGMA_CLIENT_ID!;
 const CLIENT_SECRET = process.env.FIGMA_CLIENT_SECRET!;
 const REDIRECT_URI = process.env.FIGMA_REDIRECT_URI!;
 
+let lastUsedCode: string | null = null;
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { code } = req.query;
 
   if (!code || typeof code !== 'string') {
     return res.status(400).json({ error: 'Missing code from query' });
+  }
+
+  if (code === lastUsedCode) {
+    console.warn("♻️ Duplicate code detected, skipping token request.");
+    return res.status(400).json({ error: 'OAuth code was already used or is stale.' });
   }
 
   const tokenUrl = 'https://www.figma.com/api/oauth/token';
@@ -48,7 +55,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(tokenRes.status).json({ error: 'Failed to fetch token', details: tokenData });
     }
 
-    // 🔍 זמנית לא שומרים קוקי, רק בודקים תגובה
+    lastUsedCode = code; // ✅ mark this code as used
+
     return res.status(200).json(tokenData);
 
   } catch (err: any) {
