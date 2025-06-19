@@ -1,29 +1,54 @@
+// pages/index.tsx
+
 import { useState } from 'react';
 
 export default function Home() {
   const [fileKey, setFileKey] = useState('');
   const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const fetchIndex = async () => {
-    const res = await fetch(`/api/indexFile?fileKey=${fileKey}`);
-    const json = await res.json();
-    setResult(json);
+  const fetchFile = async () => {
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    try {
+      const res = await fetch(`/api/indexFile?fileKey=${encodeURIComponent(fileKey)}`);
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Unknown error');
+      } else {
+        setResult(data);
+      }
+    } catch (err) {
+      setError('Request failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div style={{ padding: 32 }}>
-      <h1>Figma Indexer</h1>
+    <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+      <h1>Figma File Indexer</h1>
       <input
+        type="text"
+        placeholder="Enter Figma file key"
         value={fileKey}
         onChange={e => setFileKey(e.target.value)}
-        placeholder="Enter Figma file key"
-        style={{ padding: 8, width: 300 }}
+        style={{ padding: '0.5rem', width: '100%', maxWidth: '400px', marginBottom: '1rem' }}
       />
-      <button onClick={fetchIndex} style={{ marginLeft: 8 }}>Index</button>
+      <br />
+      <button onClick={fetchFile} disabled={loading || !fileKey} style={{ padding: '0.5rem 1rem' }}>
+        {loading ? 'Loading...' : 'Fetch File'}
+      </button>
 
-      <pre style={{ marginTop: 32, background: '#eee', padding: 16 }}>
-        {JSON.stringify(result, null, 2)}
-      </pre>
-    </div>
+      {error && <p style={{ color: 'red' }}>❌ {error}</p>}
+
+      {result && (
+        <pre style={{ marginTop: '1rem', background: '#f0f0f0', padding: '1rem', maxWidth: '100%', overflowX: 'auto' }}>
+          {JSON.stringify(result, null, 2)}
+        </pre>
+      )}
+    </main>
   );
 }
