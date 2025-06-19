@@ -60,7 +60,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       maxAge: 60 * 60 * 24 * 30, // 30 days
     }));
 
-    return res.status(200).json({ ok: true });
+    res.writeHead(302, { Location: '/' });
+    res.end();
 
   } catch (err: any) {
     console.error('❌ OAuth error:', err);
